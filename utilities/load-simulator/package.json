@@ -7,13 +7,15 @@
     "generate-cert": "export NODE_ENV=production && node dist/main.js",
     "dev-test": "export NODE_ENV=dev && ts-node main.ts",
     "build": "export NODE_ENV=dev && tsc",
-    "build-run": "export NODE_ENV=dev && tsc && npm generate-cert"
+    "build-run": "export NODE_ENV=dev && tsc && npm generate-cert",
+    "start": "export NODE_ENV=dev && node dist/main.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "winston": "^3.8.2",
-    "zerossl": "^2.0.0"
+    "@faker-js/faker": "^7.6.0",
+    "axios": "^1.3.4",
+    "winston": "^3.8.2"
   },
   "devDependencies": {
     "@types/node": "^18.15.3",
