@@ -1,0 +1,2 @@
+FROM jupyter/minimal-notebook 
+ENV NOTEBOOK_ARGS="--NotebookApp.token='token' --NotebookApp.password='test'"

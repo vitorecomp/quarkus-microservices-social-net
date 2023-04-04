@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres-custom
+    build: ./postgres
+    mem_limit: 24gb
+    environment:
+      TZ: America/Sao_Paulo
+      POSTGRES_PASSWORD: metrics_pass
+      POSTGRES_DB: metrics
+    ports:
+      - 5432:5432
+    volumes: ./postgres/database:/var/lib/postgresql:Z
+
+  grafana:
+    image: grafana/grafana-oss
+    environment:
+      TZ: America/Sao_Paulo
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: metrics_pass
+      GF_INSTALL_PLUGINS: simpod-json-datasource
+    volumes:
+      - ./grafana-provisioning:/etc/grafana/provisioning:Z
+    ports:
+      - 3000:3000
+    depends_on:
+       - postgres
+
+  jupyter:
+    image: notebook
+    build: ./notebook
+    volumes: ./notebook/notebook:/home/jovyan/work:Z
+    ports:
+      - 8888:8888
+    depends_on:
+       - postgres
+
+
+networks:
+  backing-services-ce:
+    name: backing-services-ce
+    driver: bridge
+    enable_ipv6: true
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.16.238.0/24
+          gateway: 172.16.238.1
+        - subnet: 2001:3984:3989::/64
+          gateway: 2001:3984:3989::1
+
