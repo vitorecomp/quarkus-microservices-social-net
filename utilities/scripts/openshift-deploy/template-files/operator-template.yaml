@@ -1,0 +1,13 @@
+# operator.yaml
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  name: social-postgres-database-operator-crunchy-data
+  namespace: social-database
+spec:
+  channel: $channel
+  startingCSV: $current_csv
+  name: $name
+  source: $catalog_source
+  sourceNamespace: $catalog_source_namespace
+  installPlanApproval: Automatic
