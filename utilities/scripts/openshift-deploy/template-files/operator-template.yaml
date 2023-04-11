@@ -6,7 +6,7 @@ metadata:
   namespace: social-database
 spec:
   channel: $channel
-  startingCSV: $current_csv
+  startingCSV: $currentCSV
   name: $name
   source: $catalog_source
   sourceNamespace: $catalog_source_namespace

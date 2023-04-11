@@ -42,7 +42,13 @@ gum format --theme=pink "## Generating the psotgres database yaml"
 generate_database_yaml $dir/template-files $dir/../deploy_files
 
 
-
+# create the project
 oc new-project social-database
-oc apply -f $dir/../deploy_files/postgres-operator.yaml
-oc apply -f $dir/../deploy_files/postgres-database.yaml
+
+# apply all files from deploy_files
+for file in $dir/../deploy_files/*; do
+    #get the file name from a path
+    file_name=$(basename $file)
+    gum format --theme=pink "# Applying $file_name"
+    oc apply -f $file
+done

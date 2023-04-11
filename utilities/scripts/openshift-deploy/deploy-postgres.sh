@@ -7,10 +7,12 @@ generate_operator_yaml() {
 
     IFS=$'\n'
     #get the operator options
-    name=$(gum choose --header "Choose your postgres operator" $(oc get packagemanifests --template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep crunchy-postgres-operator))
+    name=$(gum choose --selected crunchy-postgres-operator --header "Choose your postgres operator" $(oc get packagemanifests --template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep crunchy-postgres-operator))
     
     
-    channel=$(gum choose --header "Choose your postgres operator version" $(oc get packagemanifests $name -o jsonpath='{.status.channels[*].name}'))
+    # restore IFS
+    unset IFS
+    channel=$(gum choose --selected v5 --header "Choose your postgres operator version" $(oc get packagemanifests $name -o jsonpath='{.status.channels[*].name}'))
     currentCSV=$(gum choose --header "Get your initial csv" $(oc get packagemanifests $name -o jsonpath='{.status.channels[?(@.name=="'$channel'")].currentCSV}'))
 
 
@@ -25,6 +27,7 @@ generate_operator_yaml() {
     export catalog_source=$catalog_source
     export catalog_source_namespace=$catalog_source_namespace
 
+    envsubst < $input_dir/operator-group-template.yaml >| $output_dir/postgres-operator-group.yaml
     envsubst < $input_dir/operator-template.yaml >| $output_dir/postgres-operator.yaml
 }
 
@@ -32,4 +35,5 @@ generate_operator_yaml() {
 generate_database_yaml() {
     input_dir=$1
     output_dir=$2
+    envsubst < $input_dir/crd-template.yaml >| $output_dir/postgres-cluster-crd.yaml
 }

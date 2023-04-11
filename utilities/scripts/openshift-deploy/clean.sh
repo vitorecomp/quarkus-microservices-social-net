@@ -30,4 +30,6 @@ then
    gum spin --title "Deleting project social-database" -- oc delete project --wait social-database 
 fi
 
-gum spin --title "Waiting everthing to be deleted" -- sleep 10
+while oc get project social-database &> /dev/null; do
+    gum spin --title "Waiting everthing to be deleted" -- sleep 10
+done
