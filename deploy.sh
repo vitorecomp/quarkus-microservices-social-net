@@ -1,6 +1,14 @@
 #deploy script on server
 #!/bin/bash
 
+clean=false
+
+if [ "$2" == "clean" ]; then
+    clean=true
+else
+    clean=false
+fi
+
 # test if gum is installed
 if ! command -v gum &> /dev/null
 then
@@ -26,24 +34,24 @@ fi
 dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 
 # build the project
-sh $dir/utilities/scripts/build/build.sh
+sh $dir/utilities/scripts/build/build.sh $clean
 
 # deploy to the selected environment
 
 if [ "$name" == "openshift" ]; then
-    echo "Deploying to openshift"
+    gum format --theme=pink "# Deploying to openshift"
     # look if the flag clean is setted
-    if [ "$2" == "clean" ]; then
+    if $clean; then
         sh $dir/utilities/scripts/openshift-deploy/clean.sh
     fi
 
-    sh $dir/utilities/scripts/openshift-deploy/deploy.sh
+    sh $dir/utilities/scripts/openshift-deploy/deploy.sh $clean
     exit 0
 fi
 
 if [ "$name" == "kubernetes" ]; then
-    echo "Deploying to kubernetes"
-    sh $dir/utilities/scripts/kubernetes-deploy/deploy.sh
+    gum format --theme=pink "# Deploying to kubernetes"
+    sh $dir/utilities/scripts/kubernetes-deploy/deploy.sh $clean
     exit 0
 fi
 

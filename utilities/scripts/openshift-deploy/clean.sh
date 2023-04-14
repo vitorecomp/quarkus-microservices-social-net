@@ -15,14 +15,14 @@ then
     exit
 fi
 
-gum format --theme=pink "# Start the cleaning process"
+gum format --theme=pink "## Start the cleaning process"
 
 #confirm with gum if the user wants to delete the project
 if ! gum confirm "Do you want to delete the follwing projects (social-database)?"; then
     exit
 fi
 
-gum format --theme=pink "## Deleting the project social-database"
+gum format --theme=pink "### Deleting the project social-database"
 
 #delete the social-database project if exists
 if oc get project social-database &> /dev/null
@@ -31,5 +31,17 @@ then
 fi
 
 while oc get project social-database &> /dev/null; do
-    gum spin --title "Waiting everthing to be deleted" -- sleep 10
+    gum spin --title "Waiting social-database to be deleted" -- sleep 2
+done
+
+gum format --theme=pink "### Deleting the project social-application"
+
+#delete the social-application project if exists
+if oc get project social-application &> /dev/null
+then
+   gum spin --title "Deleting project social-application" -- oc delete project --wait social-application 
+fi
+
+while oc get project social-application &> /dev/null; do
+    gum spin --title "Waiting social-application to be deleted" -- sleep 2
 done

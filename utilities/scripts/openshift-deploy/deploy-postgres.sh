@@ -37,3 +37,27 @@ generate_database_yaml() {
     output_dir=$2
     envsubst < $input_dir/crd-template.yaml >| $output_dir/postgres-cluster-crd.yaml
 }
+
+deploy_database () {
+
+    input_dir=$1
+
+    oc new-project social-database
+
+    gum format --theme=pink "### Applying postgres-operator-group.yaml"
+    oc apply -f $input_dir/postgres-operator-group.yaml
+    gum format --theme=pink "### Applying postgres-operator.yaml"
+    oc apply -f $input_dir/postgres-operator.yaml
+    
+    gum format --theme=pink "### Applying postgres-cluster-crd.yaml"
+    oc apply -f $input_dir/postgres-cluster-crd.yaml
+
+    # # apply all files from deploy_files
+    # for file in $dir/../deploy_files/postgres-*; do
+    #     #get the file name from a path
+    #     file_name=$(basename $file)
+    #     gum format --theme=pink "# Applying $file_name"
+    #     oc apply -f $file
+    # done
+
+}
