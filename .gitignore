@@ -25,3 +25,7 @@ hs_err_pid*
 #deploy_files
 
 utilities/scripts/deploy_files
+
+#ide files
+.vscode
+**/.vscode
