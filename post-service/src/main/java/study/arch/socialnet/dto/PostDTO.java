@@ -7,6 +7,6 @@ import lombok.Value;
 @Builder
 public class PostDTO {
     Long id;
-    Long user;
+    Long userId;
     String text;
 }

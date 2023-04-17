@@ -30,7 +30,7 @@ public class Post {
     @GeneratedValue
     private Long id;
     
-    private Long user;
+    private Long userId;
     private String text;
 
     @UpdateTimestamp

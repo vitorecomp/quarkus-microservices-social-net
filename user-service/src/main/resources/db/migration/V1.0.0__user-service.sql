@@ -1,16 +1,16 @@
-create sequence hibernate_sequence start with 1 increment by 1;
+create sequence hibernate_sequence start 1 increment 1;
 
     create table Follow (
-       id bigint not null,
+       id int8 not null,
         createdAt timestamp not null,
-        me bigint,
+        me int8,
         updatedAt timestamp,
-        who bigint,
+        who int8,
         primary key (id)
     );
 
-    create table User (
-       id bigint not null,
+    create table users (
+       id int8 not null,
         createdAt timestamp not null,
         name varchar(255),
         updatedAt timestamp,
