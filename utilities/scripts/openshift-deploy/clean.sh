@@ -24,10 +24,26 @@ fi
 
 gum format --theme=pink "### Deleting the project social-database"
 
+
 #delete the social-database project if exists
 if oc get project social-database &> /dev/null
 then
-   gum spin --title "Deleting project social-database" -- oc delete project --wait social-database 
+    if oc get PostgresCluster social-database-postgres -n social-database &> /dev/null
+    then
+        oc delete PostgresCluster social-database-postgres -n social-database
+        gum spin --title "Deleting PostgresCluster social-database-postgres" -- oc wait --for=delete --timeout=600s PostgresCluster/social-database-postgres -n social-database
+    fi
+
+    oc delete project social-database 
+    gum spin --title "Deleting project social-database" -- oc wait --for=delete --timeout=600s namespace/social-database
+fi
+
+
+#delete the social-database project if exists
+if oc get project social-database &> /dev/null
+then
+    oc delete project social-database 
+    gum spin --title "Deleting project social-database" -- oc wait --for=delete --timeout=600s namespace/social-database
 fi
 
 while oc get project social-database &> /dev/null; do
@@ -39,7 +55,8 @@ gum format --theme=pink "### Deleting the project social-application"
 #delete the social-application project if exists
 if oc get project social-application &> /dev/null
 then
-   gum spin --title "Deleting project social-application" -- oc delete project --wait social-application 
+    oc delete project social-application
+    gum spin --title "Deleting project social-application" -- oc wait --for=delete --timeout=600s namespace/social-application
 fi
 
 while oc get project social-application &> /dev/null; do

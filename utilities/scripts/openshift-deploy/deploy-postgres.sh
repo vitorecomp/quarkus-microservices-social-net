@@ -49,6 +49,13 @@ deploy_database () {
     gum format --theme=pink "### Applying postgres-operator.yaml"
     oc apply -f $input_dir/postgres-operator.yaml
     
+    
+    while [[ $(oc get deployment -n social-database | grep -c pgo) -eq 0 ]]; do
+        sleep 1
+    done
+    # wait for the operator to be ready
+    oc wait --for=condition=available --timeout=600s deployment/pgo -n social-database
+
     gum format --theme=pink "### Applying postgres-cluster-crd.yaml"
     oc apply -f $input_dir/postgres-cluster-crd.yaml
 
