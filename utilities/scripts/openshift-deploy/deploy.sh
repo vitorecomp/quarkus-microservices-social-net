@@ -23,20 +23,19 @@ dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 mkdir -p $dir/../deploy_files
 
 
+######################################
 
+gum format --theme=pink "## Start the database installation process"
 #test if the project social-database exists
 if oc get project social-database &> /dev/null;
 then
-    echo "social-database project already exist. Finishing the installation process."
-    echo "If you want to reinstall postgres, please delete the project social-database and run this script again."
-    echo "oc delete project social-database"
+    gum format --theme=pink "### social-database project already exist. Finishing the installation process."
+    gum format --theme=pink "### If you want to reinstall postgres, please delete the project social-database and run this script again."
+    gum format --theme=pink "### oc delete project social-database"
     if $clean; then
         exit
     fi
 else 
-
-    gum format --theme=pink "## Start the database installation process"
-
     source $dir/deploy-postgres.sh
 
     # generate the postgres operator yaml
@@ -51,17 +50,18 @@ else
     deploy_database $dir/../deploy_files
 fi
 
+######################################
+gum format --theme=pink "## Start the application installation process"
 # test if the project social-application exists
 if oc get project social-application &> /dev/null
 then
-    echo "social-application project already exist. Finishing the installation process."
-    echo "If you want to reinstall the application, please delete the project social-application and run this script again."
-    echo "oc delete project social-application"
+    gum format --theme=pink "### social-application project already exist. Finishing the installation process."
+    gum format --theme=pink "### If you want to reinstall the application, please delete the project social-application and run this script again."
+    gum format --theme=pink "### oc delete project social-application"
     if $clean; then
         exit
     fi
 else
-    gum format --theme=pink "## Start the application installation process"
 
     oc new-project social-application
 
@@ -77,15 +77,58 @@ else
 fi
 
 
+######################################
+gum format --theme=pink "## Start the k6 load test installation process"
+if oc get project k6-load &> /dev/null
+then
+    gum format --theme=pink "### k6-load project already exist. Finishing the installation process."
+    gum format --theme=pink "### If you want to reinstall the application, please delete the project k6-load and run this script again."
+    gum format --theme=pink "### oc delete project k6-load"
+    if $clean; then
+        exit
+    fi
+else
+    oc new-project k6-load
+    source $dir/deploy-k6-load.sh
+fi
 
-gum format --theme=pink "# Start the artillery installation process"
-source $dir/deploy-artillery.sh
+######################################
+gum format --theme=pink "## Start the monitoring installation process"
+if oc get project monitoring &> /dev/null
+then
+    gum format --theme=pink "### monitoring project already exist. Finishing the installation process."
+    gum format --theme=pink "### If you want to reinstall the application, please delete the project monitoring and run this script again."
+    gum format --theme=pink "### oc delete project monitoring"
+    if $clean; then
+        exit
+    fi
+else
 
-gum format --theme=pink "# Start the data science installation process"
-source $dir/deploy-datascience.sh
+    oc new-project monitoring
 
+    source $dir/deploy-monitoring.sh 
+    deploy_monitoring $dir/template-files $dir/../deploy_files
+fi
+
+######################################
+gum format --theme=pink "## Start the data science installation process"
+if oc get project data-science &> /dev/null
+then
+    gum format --theme=pink "### data-science project already exist. Finishing the installation process."
+    gum format --theme=pink "### If you want to reinstall the application, please delete the project data-science and run this script again."
+    gum format --theme=pink "### oc delete project data-science"
+    if $clean; then
+        exit
+    fi
+else
+
+    oc new-project data-science
+    source $dir/deploy-datascience.sh
+fi
+
+######################################
 gum format --theme=pink "# Apply all the final changes"
 
-echo " "
+######################################
 gum format --theme=pink "# All the installation process is done!"
 
