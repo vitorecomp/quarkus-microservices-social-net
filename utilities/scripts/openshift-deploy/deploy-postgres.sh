@@ -4,22 +4,24 @@
 generate_operator_yaml() {
     input_dir=$1
     output_dir=$2
+    fast=true
 
-    IFS=$'\n'
     #get the operator options
-    name=$(gum choose --selected crunchy-postgres-operator --header "Choose your postgres operator" $(oc get packagemanifests --template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep crunchy-postgres-operator))
-    
-    
-    # restore IFS
-    unset IFS
-    channel=$(gum choose --selected v5 --header "Choose your postgres operator version" $(oc get packagemanifests $name -o jsonpath='{.status.channels[*].name}'))
-    currentCSV=$(gum choose --header "Get your initial csv" $(oc get packagemanifests $name -o jsonpath='{.status.channels[?(@.name=="'$channel'")].currentCSV}'))
-
+    if [ "$fast" = true ]; then
+        name=crunchy-postgres-operator
+        channel=v5
+        currentCSV=crunchy-postgres-operator.v5.0.0
+    else
+        IFS=$'\n'
+        name=$(gum choose --selected crunchy-postgres-operator --header "Choose your postgres operator" $(oc get packagemanifests --template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep crunchy-postgres-operator))
+        # restore IFS
+        unset IFS
+        channel=$(gum choose --selected v5 --header "Choose your postgres operator version" $(oc get packagemanifests $name -o jsonpath='{.status.channels[*].name}'))
+        currentCSV=$(gum choose --header "Get your initial csv" $(oc get packagemanifests $name -o jsonpath='{.status.channels[?(@.name=="'$channel'")].currentCSV}'))
+    fi
 
     catalog_source=$(oc get packagemanifests $name -o jsonpath='{.status.catalogSource}')
     catalog_source_namespace=$(oc get packagemanifests $name -o jsonpath='{.status.catalogSourceNamespace}')
-    # restore IFS
-    unset IFS
 
     export name=$name
     export channel=$channel
