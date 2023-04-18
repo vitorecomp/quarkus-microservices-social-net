@@ -73,16 +73,16 @@ generate_grafana_operator_yaml(){
 
     #get the operator options
     if [ "$fast" = true ]; then
-        name=grafana
-        channel=beta
-        currentCSV=grafana-operator.v3.5.0
+        name=grafana-operator
+        channel=v4
+        currentCSV=grafana-operator.v4.10.0
     else
         IFS=$'\n'
-        name=$(gum choose --selected crunchy-postgres-operator --header "Choose your postgres operator" $(oc get packagemanifests --template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep grafana))
+        name=$(gum choose --selected grafana --header "Choose your grafana operator" $(oc get packagemanifests --template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep grafana))
         # restore IFS
         unset IFS
-        channel=$(gum choose --selected v5 --header "Choose your postgres operator version" $(oc get packagemanifests $name -o jsonpath='{.status.channels[*].name}'))
-        currentCSV=$(gum choose --header "Get your initial csv" $(oc get packagemanifests $name -o jsonpath='{.status.channels[?(@.name=="'$channel'")].currentCSV}'))
+        channel=$(gum choose --selected v4 --header "Choose your grafana operator version" $(oc get packagemanifests $name -o jsonpath='{.status.channels[*].name}'))
+        currentCSV=$(gum choose --selected grafana-operator.v4.10.0 --header "Get your initial csv" $(oc get packagemanifests $name -o jsonpath='{.status.channels[?(@.name=="'$channel'")].currentCSV}'))
     fi
 
     catalog_source=$(oc get packagemanifests $name -o jsonpath='{.status.catalogSource}')
@@ -99,13 +99,27 @@ generate_grafana_operator_yaml(){
 
 generate_grafana_crd_yaml() {
     envsubst < $input_dir/monitoring/crd-grafana-template.yaml >| $output_dir/crd-grafana.yaml
-    envsubst < $input_dir/monitoring/crd-grafana-template-datasource.yaml >| $output_dir/crd-grafana-datasource.yaml
-    envsubst < $input_dir/monitoring/crd-grafana-template-dashboard.yaml >| $output_dir/crd-grafana-dashboard.yaml
+    # envsubst < $input_dir/monitoring/crd-grafana-template-datasource.yaml >| $output_dir/crd-grafana-datasource.yaml
+    # envsubst < $input_dir/monitoring/crd-grafana-template-dashboard.yaml >| $output_dir/crd-grafana-dashboard.yaml
 }
 
 apply_grafana() {
     oc apply -f $dir/../deploy_files/operator-grafana.yaml
+
+    gum spin --title "wait grafana subscription" -- oc wait --for=condition=AtLatestKnown --timeout=600s subscription/grafana -n monitoring
+    gum spin --title "wait grafana operator" -- oc wait --for=condition=available --timeout=600s deployment/grafana-operator-controller-manager -n monitoring
+
     oc apply -f $dir/../deploy_files/crd-grafana.yaml
+
+    gum spin --title "wait grafana deploy" -- oc wait --for=condition=available --timeout=600s deployment/grafana-deployment -n monitoring
+
+    #wait for the grafana service to exist
+    while [ -z "$(oc get svc -n monitoring | grep grafana-service)" ]; do
+        gum spin --title "wait grafana service" -- sleep 5
+    done
+    #wait for the grafana service to be available
+    oc expose svc/grafana-service -n monitoring
+
 }
 
 #create the monitoring project
@@ -122,9 +136,9 @@ deploy_monitoring() {
     apply_prometheus $output_dir
 
     # #install the grafana
-    # generate_grafana_operator_yaml $template_dir $output_dir
-    # generate_grafana_crd_yaml $template_dir $output_dir
-    # apply_grafana $output_dir
+    generate_grafana_operator_yaml $template_dir $output_dir
+    generate_grafana_crd_yaml $template_dir $output_dir
+    apply_grafana $output_dir
     
 }
 
