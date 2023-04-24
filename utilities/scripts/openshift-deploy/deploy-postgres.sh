@@ -29,15 +29,15 @@ generate_operator_yaml() {
     export catalog_source=$catalog_source
     export catalog_source_namespace=$catalog_source_namespace
 
-    envsubst < $input_dir/operator-group-template.yaml >| $output_dir/postgres-operator-group.yaml
-    envsubst < $input_dir/operator-template.yaml >| $output_dir/postgres-operator.yaml
+    envsubst < $input_dir/operator-group-social-database-template.yaml >| $output_dir/operator-group-social-database.yaml
+    envsubst < $input_dir/social-databse/postgres-operator-template.yaml >| $output_dir/postgres-operator.yaml
 }
 
 
 generate_database_yaml() {
     input_dir=$1
     output_dir=$2
-    envsubst < $input_dir/crd-template.yaml >| $output_dir/postgres-cluster-crd.yaml
+    envsubst < $input_dir/social-database/postgres-crd-template.yaml >| $output_dir/postgres-crd.yaml
 }
 
 deploy_database () {
@@ -47,7 +47,7 @@ deploy_database () {
     oc new-project social-database
 
     gum format --theme=pink "### Applying postgres-operator-group.yaml"
-    oc apply -f $input_dir/postgres-operator-group.yaml
+    oc apply -f $input_dir/operator-group-social-database.yaml
     gum format --theme=pink "### Applying postgres-operator.yaml"
     oc apply -f $input_dir/postgres-operator.yaml
     
@@ -59,7 +59,7 @@ deploy_database () {
     oc wait --for=condition=available --timeout=600s deployment/pgo -n social-database
 
     gum format --theme=pink "### Applying postgres-cluster-crd.yaml"
-    oc apply -f $input_dir/postgres-cluster-crd.yaml
+    oc apply -f $input_dir/postgres-crd.yaml
 
     # # apply all files from deploy_files
     # for file in $dir/../deploy_files/postgres-*; do
