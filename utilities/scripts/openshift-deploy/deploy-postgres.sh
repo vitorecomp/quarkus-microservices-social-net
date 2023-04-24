@@ -10,7 +10,7 @@ generate_operator_yaml() {
     if [ "$fast" = true ]; then
         name=crunchy-postgres-operator
         channel=v5
-        currentCSV=crunchy-postgres-operator.v5.0.0
+        currentCSV=$(oc get packagemanifests $name -o jsonpath='{.status.channels[?(@.name=="'$channel'")].currentCSV}' | tail -n 1)
     else
         IFS=$'\n'
         name=$(gum choose --selected crunchy-postgres-operator --header "Choose your postgres operator" $(oc get packagemanifests --template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep crunchy-postgres-operator))

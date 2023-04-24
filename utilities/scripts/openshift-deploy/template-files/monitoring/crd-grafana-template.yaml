@@ -10,3 +10,7 @@ metadata:
 spec:
   baseImage: 'grafana/grafana:9.1.0'
   config: {}
+  dashboardLabelSelector:
+    - matchExpressions:
+        - key: k6-dash
+          operator: Exists

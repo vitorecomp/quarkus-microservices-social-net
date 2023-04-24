@@ -23,8 +23,14 @@ generate_prometheus_operator_yaml() {
     #get the operator options
     if [ "$fast" = true ]; then
         name=prometheus
-        channel=beta
-        currentCSV=prometheusoperator.0.56.3
+        catalog_source=community-operators
+        unset IFS
+        channel=$(oc get packagemanifest -o json | jq '.items[] | select(.metadata.labels.catalog =="'$catalog_source'") | select(.metadata.name=="'$name'")' | jq .status.defaultChannel)
+        #remove quota from vars
+        channel=$(echo $channel | sed 's/"//g')
+        currentCSV=$(oc get packagemanifest -o json | jq '.items[] | select(.metadata.labels.catalog =="'$catalog_source'") | select(.metadata.name=="'$name'")' | jq '.status.channels[] | select(.name=="'$channel'")' | jq .currentCSV)
+        #remove quota from vars
+        currentCSV=$(echo $currentCSV | sed 's/"//g')
     else
         IFS=$'\n'
         name=$(gum choose --selected prometheus --header "Choose your prometheus operator" $(oc get packagemanifests --template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep prometheus))
@@ -32,10 +38,10 @@ generate_prometheus_operator_yaml() {
         unset IFS
         channel=$(gum choose --selected beta --header "Choose your prometheus operator version" $(oc get packagemanifests $name -o jsonpath='{.status.channels[*].name}'))
         currentCSV=$(gum choose --header "Get your initial csv" $(oc get packagemanifests $name -o jsonpath='{.status.channels[?(@.name=="'$channel'")].currentCSV}'))
+        catalog_source=$(oc get packagemanifests $name -o jsonpath='{.status.catalogSource}')
     fi
 
 
-    catalog_source=$(oc get packagemanifests $name -o jsonpath='{.status.catalogSource}')
     catalog_source_namespace=$(oc get packagemanifests $name -o jsonpath='{.status.catalogSourceNamespace}')
 
     export name=$name
@@ -74,8 +80,15 @@ generate_grafana_operator_yaml(){
     #get the operator options
     if [ "$fast" = true ]; then
         name=grafana-operator
-        channel=v4
-        currentCSV=grafana-operator.v4.10.0
+        catalog_source=community-operators
+        unset IFS
+        channel=$(oc get packagemanifest -o json | jq '.items[] | select(.metadata.labels.catalog =="'$catalog_source'") | select(.metadata.name=="'$name'")' | jq .status.defaultChannel)
+        #remove quota from vars
+        channel=$(echo $channel | sed 's/"//g')
+        currentCSV=$(oc get packagemanifest -o json | jq '.items[] | select(.metadata.labels.catalog =="'$catalog_source'") | select(.metadata.name=="'$name'")' | jq '.status.channels[] | select(.name=="'$channel'")' | jq .currentCSV)
+        #remove quota from vars
+        currentCSV=$(echo $currentCSV | sed 's/"//g')
+        
     else
         IFS=$'\n'
         name=$(gum choose --selected grafana --header "Choose your grafana operator" $(oc get packagemanifests --template='{{range .items}}{{.metadata.name}}{{"\n"}}{{end}}' | grep grafana))
@@ -83,9 +96,8 @@ generate_grafana_operator_yaml(){
         unset IFS
         channel=$(gum choose --selected v4 --header "Choose your grafana operator version" $(oc get packagemanifests $name -o jsonpath='{.status.channels[*].name}'))
         currentCSV=$(gum choose --selected grafana-operator.v4.10.0 --header "Get your initial csv" $(oc get packagemanifests $name -o jsonpath='{.status.channels[?(@.name=="'$channel'")].currentCSV}'))
+        catalog_source=$(oc get packagemanifests $name -o jsonpath='{.status.catalogSource}')
     fi
-
-    catalog_source=$(oc get packagemanifests $name -o jsonpath='{.status.catalogSource}')
     catalog_source_namespace=$(oc get packagemanifests $name -o jsonpath='{.status.catalogSourceNamespace}')
 
     export name=$name
@@ -99,8 +111,8 @@ generate_grafana_operator_yaml(){
 
 generate_grafana_crd_yaml() {
     envsubst < $input_dir/monitoring/crd-grafana-template.yaml >| $output_dir/crd-grafana.yaml
-    # envsubst < $input_dir/monitoring/crd-grafana-template-datasource.yaml >| $output_dir/crd-grafana-datasource.yaml
-    # envsubst < $input_dir/monitoring/crd-grafana-template-dashboard.yaml >| $output_dir/crd-grafana-dashboard.yaml
+    envsubst < $input_dir/monitoring/crd-grafana-template-datasource.yaml >| $output_dir/crd-grafana-datasource.yaml
+    envsubst < $input_dir/monitoring/crd-grafana-template-dashboard.yaml >| $output_dir/crd-grafana-dashboard.yaml
 }
 
 apply_grafana() {
