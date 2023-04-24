@@ -78,21 +78,6 @@ fi
 
 
 ######################################
-gum format --theme=pink "## Start the k6 load test installation process"
-if oc get project k6-load &> /dev/null
-then
-    gum format --theme=pink "### k6-load project already exist. Finishing the installation process."
-    gum format --theme=pink "### If you want to reinstall the application, please delete the project k6-load and run this script again."
-    gum format --theme=pink "### oc delete project k6-load"
-    if $clean; then
-        exit
-    fi
-else
-    oc new-project k6-load
-    source $dir/deploy-k6-load.sh
-fi
-
-######################################
 gum format --theme=pink "## Start the monitoring installation process"
 if oc get project monitoring &> /dev/null
 then
@@ -109,6 +94,25 @@ else
     source $dir/deploy-monitoring.sh 
     deploy_monitoring $dir/template-files $dir/../deploy_files
 fi
+
+######################################
+gum format --theme=pink "## Start the k6 load test installation process"
+if oc get project k6-load &> /dev/null
+then
+    gum format --theme=pink "### k6-load project already exist. Finishing the installation process."
+    gum format --theme=pink "### If you want to reinstall the application, please delete the project k6-load and run this script again."
+    gum format --theme=pink "### oc delete project k6-load"
+    if $clean; then
+        exit
+    fi
+else
+    oc new-project k6-load
+    source $dir/deploy-k6.sh
+    
+    deploy_k6 $dir/../deploy_files $dir/../../k6-load
+fi
+dir=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
+
 
 ######################################
 gum format --theme=pink "## Start the data science installation process"

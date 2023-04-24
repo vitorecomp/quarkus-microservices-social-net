@@ -30,7 +30,7 @@ generate_operator_yaml() {
     export catalog_source_namespace=$catalog_source_namespace
 
     envsubst < $input_dir/operator-group-social-database-template.yaml >| $output_dir/operator-group-social-database.yaml
-    envsubst < $input_dir/social-databse/postgres-operator-template.yaml >| $output_dir/postgres-operator.yaml
+    envsubst < $input_dir/social-database/postgres-operator-template.yaml >| $output_dir/postgres-operator.yaml
 }
 
 
@@ -53,7 +53,7 @@ deploy_database () {
     
     
     while [[ $(oc get deployment -n social-database | grep -c pgo) -eq 0 ]]; do
-        sleep 1
+        gum spin --title "wait the postgres deploys" -- sleep 5
     done
     # wait for the operator to be ready
     oc wait --for=condition=available --timeout=600s deployment/pgo -n social-database

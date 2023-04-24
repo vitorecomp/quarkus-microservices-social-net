@@ -6,8 +6,8 @@ spec:
   parallelism: 4
   script:
     configMap:
-      name: "scenarios-test"
-      file: "archive.tar" # <-- change here
+      name: "social-test"
+      file: "integration-run.js" # <-- change here
   arguments: -o experimental-prometheus-rw --tag testid=integration-test
   runner:
     metadata:

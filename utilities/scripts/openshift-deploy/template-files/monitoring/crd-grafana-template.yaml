@@ -8,7 +8,7 @@ metadata:
   resourceVersion: '1446740'
   uid: 0c8a830f-a8db-482d-b299-66f15c05246c
 spec:
-  baseImage: 'grafana/grafana:9.1.0'
+  baseImage: 'grafana/grafana:9.3.2'
   config: {}
   dashboardLabelSelector:
     - matchExpressions:

@@ -111,8 +111,8 @@ generate_grafana_operator_yaml(){
 
 generate_grafana_crd_yaml() {
     envsubst < $input_dir/monitoring/crd-grafana-template.yaml >| $output_dir/crd-grafana.yaml
-    envsubst < $input_dir/monitoring/crd-grafana-template-datasource.yaml >| $output_dir/crd-grafana-datasource.yaml
-    envsubst < $input_dir/monitoring/crd-grafana-template-dashboard.yaml >| $output_dir/crd-grafana-dashboard.yaml
+    envsubst < $input_dir/monitoring/crd-grafana-datasource-template.yaml >| $output_dir/crd-grafana-datasource.yaml
+    cat $input_dir/monitoring/crd-grafana-dashboard-template.yaml >| $output_dir/crd-grafana-dashboard.yaml
 }
 
 apply_grafana() {
@@ -121,6 +121,11 @@ apply_grafana() {
     gum spin --title "wait grafana subscription" -- oc wait --for=condition=AtLatestKnown --timeout=600s subscription/grafana -n monitoring
     gum spin --title "wait grafana operator" -- oc wait --for=condition=available --timeout=600s deployment/grafana-operator-controller-manager -n monitoring
 
+    # deploy the grafana crd for the dashboard and datasource
+    oc apply -f $dir/../deploy_files/crd-grafana-datasource.yaml
+    oc apply -f $dir/../deploy_files/crd-grafana-dashboard.yaml
+
+    # deploy the base crd 
     oc apply -f $dir/../deploy_files/crd-grafana.yaml
 
     gum spin --title "wait grafana deploy" -- oc wait --for=condition=available --timeout=600s deployment/grafana-deployment -n monitoring
