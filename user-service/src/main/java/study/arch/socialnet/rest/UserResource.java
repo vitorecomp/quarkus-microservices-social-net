@@ -29,6 +29,7 @@ import study.arch.socialnet.dto.mapper.UserMapper;
 @Consumes(MediaType.APPLICATION_JSON)
 @ApplicationScoped
 public class UserResource {
+    
     UsersDAO usersDAO;
     UserMapper userMapper;
     Logger logger;

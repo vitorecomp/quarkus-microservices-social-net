@@ -11,6 +11,7 @@ public class PostDTO {
     Long id;
     Long userId;
     String text;
+    Long likes;
 
     LocalDateTime createdAt;
     LocalDateTime updatedAt;

@@ -1,8 +1,11 @@
 package study.arch.socialnet.dao;
 
+import javax.enterprise.context.ApplicationScoped;
+
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import study.arch.socialnet.domain.Like;
 
+@ApplicationScoped
 public class LikeDAO implements PanacheRepository<Like>{
 
     public void create(Long postId, Long user) {
