@@ -33,6 +33,8 @@ public class Post {
     private Long userId;
     private String text;
 
+    private Long likes = 0L;
+
     @UpdateTimestamp
 	private LocalDateTime updatedAt;
 
