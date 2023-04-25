@@ -12,19 +12,19 @@ public class FolllowersResource {
 
     @GET
     @Path("/{id}")
-    public String lookFollowing(@HeaderParam(value = "myId") String myid) {
+    public String lookFollowing(@HeaderParam(value = "X-User-Id") String myid) {
         return "Hello from RESTEasy Reactive";
     }
 
     @POST
     @Path("/{whoToFollow}")
-    public String create(@HeaderParam(value = "myId") String myid, @PathParam(value = "whoToFollow") String whoToFollow) {
+    public String create(@HeaderParam(value = "X-User-Id") String myid, @PathParam(value = "whoToFollow") String whoToFollow) {
         return "Hello from RESTEasy Reactive";
     }
 
     @DELETE
     @Path("/{whoToUnfollow}")
-    public String delete(@PathParam(value = "whoToUnfollow") String whoToUnfollow) {
+    public String delete(@HeaderParam(value = "X-User-Id") String myid, @PathParam(value = "whoToUnfollow") String whoToUnfollow) {
         return "Hello from RESTEasy Reactive";
     }
 }

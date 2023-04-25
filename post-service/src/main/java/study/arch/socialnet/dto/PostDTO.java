@@ -1,5 +1,7 @@
 package study.arch.socialnet.dto;
 
+import java.time.LocalDateTime;
+
 import lombok.Builder;
 import lombok.Value;
 
@@ -9,4 +11,7 @@ public class PostDTO {
     Long id;
     Long userId;
     String text;
+
+    LocalDateTime createdAt;
+    LocalDateTime updatedAt;
 }
