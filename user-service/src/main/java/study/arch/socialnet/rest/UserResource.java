@@ -21,6 +21,7 @@ import org.jboss.logging.Logger;
 
 import study.arch.socialnet.dao.UsersDAO;
 import study.arch.socialnet.domain.User;
+import study.arch.socialnet.dto.UserCreateDTO;
 import study.arch.socialnet.dto.UserDTO;
 import study.arch.socialnet.dto.mapper.UserMapper;
 
@@ -32,13 +33,11 @@ public class UserResource {
     
     UsersDAO usersDAO;
     UserMapper userMapper;
-    Logger logger;
     
     @Inject
     UserResource(UsersDAO usersDAO, UserMapper userMapper, Logger logger){
         this.usersDAO = usersDAO;
         this.userMapper = userMapper;
-        this.logger = logger;
     }
 
     @GET
@@ -58,13 +57,17 @@ public class UserResource {
 
     @POST
     @Transactional
-    public UserDTO create(UserDTO userDTO) {
-        logger.info("Creating user");
-        User user = userMapper.toEntity(userDTO);
-        User dbUser = usersDAO.findById(user.getId());
-        if(dbUser != null){
-            user = dbUser;
+    public UserDTO create(UserCreateDTO userCreateDTO) {
+        User user = userMapper.toEntity(userCreateDTO);
+        if(user.getId() != null){
+            User dbUser = usersDAO.findById(user.getId());
+            if(dbUser != null){
+                user = dbUser;
+            }else{
+                user.setId(null);
+            }
         }
+        
         usersDAO.persist(user);
         return userMapper.toResource(user);
     }
@@ -72,6 +75,7 @@ public class UserResource {
 
     @DELETE
     @Path("/{id}")
+    @Transactional
     public void delete(@PathParam(value = "id") Long id) throws NotFoundException {
         User user = usersDAO.findById(id);
         if(user == null){
