@@ -10,7 +10,8 @@ import lombok.Value;
 public class PostDTO {
     Long id;
     Long userId;
-    String text;
+    String title;
+    String content;
     Long likes;
 
     LocalDateTime createdAt;

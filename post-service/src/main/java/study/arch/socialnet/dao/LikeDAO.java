@@ -1,6 +1,6 @@
 package study.arch.socialnet.dao;
 
-import javax.enterprise.context.ApplicationScoped;
+import jakarta.enterprise.context.ApplicationScoped;
 
 import io.quarkus.hibernate.orm.panache.PanacheRepository;
 import study.arch.socialnet.domain.Like;

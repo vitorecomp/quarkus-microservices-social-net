@@ -5,10 +5,7 @@ import lombok.Value;
 
 @Value
 @Builder
-public class CommentDTO {
-    Long id;
+public class PostCreateDTO {
+    String title;
     String content;
-    Long userId;
-
-    PostDTO post;
 }

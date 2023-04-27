@@ -2,25 +2,26 @@ package study.arch.socialnet.rest;
 
 import java.util.List;
 
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.transaction.Transactional;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
-import javax.ws.rs.DefaultValue;
-import javax.ws.rs.GET;
-import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
+import jakarta.enterprise.context.ApplicationScoped;
+import jakarta.inject.Inject;
+import jakarta.transaction.Transactional;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.DefaultValue;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.HeaderParam;
+import jakarta.ws.rs.NotFoundException;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
 
-import org.jboss.logging.Logger;
 
 import study.arch.socialnet.dao.PostsDAO;
 import study.arch.socialnet.domain.Post;
+import study.arch.socialnet.dto.PostCreateDTO;
 import study.arch.socialnet.dto.PostDTO;
 import study.arch.socialnet.dto.mapper.PostMapper;
 
@@ -31,13 +32,11 @@ import study.arch.socialnet.dto.mapper.PostMapper;
 public class PostResource {
     PostsDAO postsDAO;
     PostMapper postMapper;
-    Logger logger;
     
     @Inject
-    PostResource(PostsDAO postsDAO, PostMapper postMapper, Logger logger){
+    PostResource(PostsDAO postsDAO, PostMapper postMapper){
         this.postsDAO = postsDAO;
         this.postMapper = postMapper;
-        this.logger = logger;
     }
 
     @GET
@@ -57,9 +56,10 @@ public class PostResource {
 
     @POST
     @Transactional
-    public PostDTO create(PostDTO PostDTO) {
-        logger.info("Creating user");
-        Post post = postMapper.toEntity(PostDTO);
+    public PostDTO create(@HeaderParam("X-User-Id") Long userId, PostCreateDTO postCreateDTO) {        
+        Post post = postMapper.toEntity(postCreateDTO);
+        post.setUserId(userId);
+
         postsDAO.persist(post);
         return postMapper.toResource(post);
     }
@@ -68,7 +68,7 @@ public class PostResource {
     @DELETE
     @Path("/{id}")
     @Transactional
-    public void delete(@PathParam(value = "id") Long id) throws NotFoundException {
+    public void delete(@PathParam("id") Long id) throws NotFoundException {
         Post post = postsDAO.findById(id);
         if(post == null){
             throw new NotFoundException();

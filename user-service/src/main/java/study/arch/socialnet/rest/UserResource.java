@@ -17,7 +17,6 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
-import org.jboss.logging.Logger;
 
 import study.arch.socialnet.dao.UsersDAO;
 import study.arch.socialnet.domain.User;
@@ -35,7 +34,7 @@ public class UserResource {
     UserMapper userMapper;
     
     @Inject
-    UserResource(UsersDAO usersDAO, UserMapper userMapper, Logger logger){
+    UserResource(UsersDAO usersDAO, UserMapper userMapper){
         this.usersDAO = usersDAO;
         this.userMapper = userMapper;
     }
