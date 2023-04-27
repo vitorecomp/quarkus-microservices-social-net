@@ -14,20 +14,18 @@ import org.hibernate.annotations.UpdateTimestamp;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 
 @Entity
-@Data
-@Getter
-@Setter
-@ToString
+@Data @Getter @Setter @NoArgsConstructor
 @EqualsAndHashCode
 @Table(name = "users")
 public class User {
     
     @Id
     @GeneratedValue
+ 
     private Long id;
     
     private String name;
@@ -38,4 +36,8 @@ public class User {
 	@CreationTimestamp
 	@Column(nullable = false, updatable = false)
 	private LocalDateTime createdAt;
+
+    public User(Long id){
+        this.id = id;
+    }
 }

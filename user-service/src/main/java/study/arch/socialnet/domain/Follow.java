@@ -6,6 +6,7 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
@@ -15,18 +16,18 @@ import lombok.Getter;
 import lombok.Setter;
 
 @Entity
-@Data
-@Getter
-@Setter
+@Data @Getter @Setter
 public class Follow {
     
     @Id
     @GeneratedValue
     private Long id;
 
-    private Long me;
+    @ManyToOne
+    User follower;
 
-    private Long who;
+    @ManyToOne
+    User following;
 
     @UpdateTimestamp
 	private LocalDateTime updatedAt;

@@ -12,7 +12,6 @@ public class UserDTO {
     Long id;
     String name;
 
-    
     LocalDateTime createdAt;
     LocalDateTime updatedAt;
 }
