@@ -26,3 +26,20 @@ create sequence hibernate_sequence start 1 increment 1;
        add constraint FKj727spsmu9s04cl6vfqg6r6a9 
        foreign key (following_id) 
        references users;
+
+
+   alter table if exists Follow 
+       alter column createdAt set data type timestamp(6);
+
+   alter table if exists Follow 
+       alter column updatedAt set data type timestamp(6);
+
+   alter table if exists users 
+       alter column createdAt set data type timestamp(6);
+
+   alter table if exists users 
+       alter column updatedAt set data type timestamp(6);
+
+   create sequence Follow_SEQ start with 1 increment by 50;
+
+   create sequence users_SEQ start with 1 increment by 50;
