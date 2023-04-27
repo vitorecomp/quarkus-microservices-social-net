@@ -5,6 +5,7 @@ import org.mapstruct.Mapper;
 import java.util.List;
 
 import study.arch.socialnet.domain.Comment;
+import study.arch.socialnet.dto.CommentCreateDTO;
 import study.arch.socialnet.dto.CommentDTO;
 
 @Mapper(componentModel = "cdi")
@@ -14,4 +15,5 @@ public interface CommentMapper {
     List<CommentDTO> toResourceList(List<Comment> comment);
 
     Comment toEntity(CommentDTO commentDTO);
+    Comment toEntity(CommentCreateDTO commentCreateDTO);
 }
