@@ -1,3 +1,12 @@
+
+const fromEnv = (name, defaultValue) => {
+  const value = __ENV[name];
+  if (value === undefined) {
+    return defaultValue;
+  }
+  return value;
+}
+
 export const getConfig = () => {
   const config = {
     maxUsers: 1000000,
@@ -7,9 +16,9 @@ export const getConfig = () => {
     commentRatio: 0.01,
     followRatio: 0.01,
 
-    userUrl: 'http://localhost:3000',
-    postUrl: 'http://localhost:3001',
-    feedUrl: 'http://localhost:3002',
+    userUrl: fromEnv('USER_SERVICE_URL', 'http://user-service.social-application.svc.cluster.local'),
+    postUrl: fromEnv('POST_SERVICE_URL', 'http://post-service.social-application.svc.cluster.local'),
+    feedUrl: fromEnv('FEED_SERVICE_URL', 'http://feed-service.social-application.svc.cluster.local'),
   };
   return config;
 }

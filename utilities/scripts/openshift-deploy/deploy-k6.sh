@@ -20,6 +20,7 @@ deploy_k6() {
 
     gum format --theme=pink "### creating the config maps"
     oc create configmap social-test --from-file $test_dir/integration-run.js \
+        --from-file $test_dir/config-factory.js \
         --from-file $test_dir/user-service-run.js \
         --from-file $test_dir/feed-service-run.js \
         --from-file $test_dir/post-service-run.js

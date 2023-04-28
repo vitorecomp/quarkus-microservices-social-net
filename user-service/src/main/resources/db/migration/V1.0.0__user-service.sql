@@ -1,45 +1,30 @@
-create sequence hibernate_sequence start 1 increment 1;
-
-    create table Follow (
-       id int8 not null,
-        createdAt timestamp not null,
-        updatedAt timestamp,
-        follower_id int8,
-        following_id int8,
+    create table user_service.Follow (
+        id bigint not null,
+        createdAt timestamp(6) not null,
+        updatedAt timestamp(6),
+        follower_id bigint,
+        following_id bigint,
         primary key (id)
     );
 
-    create table users (
-       id int8 not null,
-        createdAt timestamp not null,
+    create table user_service.users (
+        id bigint not null,
+        createdAt timestamp(6) not null,
         name varchar(255),
-        updatedAt timestamp,
+        updatedAt timestamp(6),
         primary key (id)
     );
 
-    alter table if exists Follow 
+    create sequence user_service.Follow_SEQ start with 1 increment by 50;
+
+    create sequence user_service.users_SEQ start with 1 increment by 50;
+
+    alter table if exists user_service.Follow 
        add constraint FK3yn6y0n1i54of1kgo27opjk62 
        foreign key (follower_id) 
-       references users;
+       references user_service.users;
 
-    alter table if exists Follow 
+    alter table if exists user_service.Follow 
        add constraint FKj727spsmu9s04cl6vfqg6r6a9 
        foreign key (following_id) 
-       references users;
-
-
-   alter table if exists Follow 
-       alter column createdAt set data type timestamp(6);
-
-   alter table if exists Follow 
-       alter column updatedAt set data type timestamp(6);
-
-   alter table if exists users 
-       alter column createdAt set data type timestamp(6);
-
-   alter table if exists users 
-       alter column updatedAt set data type timestamp(6);
-
-   create sequence Follow_SEQ start with 1 increment by 50;
-
-   create sequence users_SEQ start with 1 increment by 50;
+       references user_service.users;

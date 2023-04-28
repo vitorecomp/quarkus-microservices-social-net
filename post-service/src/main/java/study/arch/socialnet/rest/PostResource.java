@@ -40,7 +40,10 @@ public class PostResource {
     }
 
     @GET
-    public List<PostDTO> look(@QueryParam("index") @DefaultValue("0") int index, @QueryParam("size") @DefaultValue("100") int size) {
+    public List<PostDTO> look(@QueryParam("lastId") Long lastId, @QueryParam("index") @DefaultValue("0") int index, @QueryParam("size") @DefaultValue("100") int size) {
+        if(lastId != null){
+            return postMapper.toResourceList(postsDAO.listByLastId(lastId, index, size));
+        }
         return postMapper.toResourceList(postsDAO.listByPage(index, size));
     }
 

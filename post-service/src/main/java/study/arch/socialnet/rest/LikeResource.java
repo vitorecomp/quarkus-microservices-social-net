@@ -29,9 +29,9 @@ public class LikeResource {
     
     @POST
     @Transactional
-    @Path("/{postId}}")
+    @Path("/{postId}")
     public PostDTO like(@PathParam("postId") Long postId, @HeaderParam("X-User-Id") Long userId) {
-        if (postsDAO.exists(postId)) {
+        if (!postsDAO.exists(postId)) {
             throw new NotFoundException();
         }
 

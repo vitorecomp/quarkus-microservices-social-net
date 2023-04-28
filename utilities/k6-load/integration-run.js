@@ -1,13 +1,15 @@
 import faker from 'https://cdnjs.cloudflare.com/ajax/libs/Faker/3.1.0/faker.min.js'
 
-import UserService from 'user-service.js';
-import PostService from 'post-service.js';
-import ConfigFactory from 'config-factory.js';
+
+import {post, getPosts, like, comment} from './post-service-run.js';
+import {getConfig, shouldPost, shouldLike, shouldComment, shouldFollow} from './config-factory.js';
+import {getUser, follow} from './user-service-run.js';
 
 
 export const options = {
   stages: [
-    { target: 200, duration: '30s' },
+    { target: 100, duration: '20s' },
+    { target: 50, duration: '200s' },
     { target: 0, duration: '30s' },
   ],
 };
@@ -16,34 +18,42 @@ export const options = {
 
 export default function () {
   //get config
-  const config = ConfigFactory.getConfig();
+  const config = getConfig();
   
   //get a user
   const userId = faker.random.number(config.maxUsers)
-  const user = UserService.getUser(userId)
+  const user = getUser(userId)
 
-  if(config.shouldPost())
-    PostService.post(user.id)
+  if(shouldPost())
+    post(user.id)
     
-  let lastId = null
+  let lastId = undefined
   //make the reads
   for(let i = 0; i < config.viewRatio; i++) {
     //get a list of post
-    const posts = PostService.getPosts(lastId)
+    const posts = getPosts(i, lastId)
+    
+    if(posts == undefined || posts == undefined || posts.length == 0)
+      break
+    try{
     lastId = posts[posts.length - 1].id
     posts.map((post) => {
       //like the post
-      if(config.shouldLike())
-        PostService.like(post.id, user.id)
+      if(shouldLike())
+        like(post.id, user.id)
       
       //comment on the post
-      if(config.shouldComment())
-        PostService.comment(post.id, user.id)
+      if(shouldComment())
+        comment(post.id, user.id)
 
       //follow the post user
-      if(config.shouldFollow())
-        UserService.follow(user.id, post.userId)
+      if(shouldFollow())
+        follow(user.id, post.userId)
     })
+    } catch(e) {
+      console.error(e)
+      console.error(posts)
+    }
     
   }
 }

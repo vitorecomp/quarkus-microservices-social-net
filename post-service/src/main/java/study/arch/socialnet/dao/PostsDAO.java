@@ -11,7 +11,7 @@ import java.util.List;
 @ApplicationScoped
 public class PostsDAO implements PanacheRepository<Post> {
     public List<Post> listByPage(Integer index, Integer size) {
-        return findAll().page(Page.of(index, size)).list();
+        return find("order by id asc").page(Page.of(index, size)).list();
     }
 
     public void incrementLike(Long postId) {
@@ -22,6 +22,10 @@ public class PostsDAO implements PanacheRepository<Post> {
 
     public boolean exists(Long postId) {
         return findById(postId) != null;
+    }
+
+    public List<Post> listByLastId(Long lastId, int index, int size) {
+        return find("id > ?1 order by id asc", lastId).page(Page.of(index, size)).list();
     }
     
 }
